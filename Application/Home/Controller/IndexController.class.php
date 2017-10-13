@@ -423,6 +423,11 @@ class IndexController extends Controller {
                                 "name" => urlencode("广州天气"),
                                 "key"  => "tianqi"
                             ),
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("模板消息"),
+                                "url"  => "http://soarteam.cn/wechat/index.php/Home/Index/Model"
+                            ),
                         ),
                     ),
                     array(
@@ -472,6 +477,43 @@ class IndexController extends Controller {
         $res = $this->http_curl($url);
         echo $res['text'];
     }
+    
+    
+    /**
+     * 模板消息
+     */
+    public function Model()
+    {
+        $Access_Token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$Access_Token;
+        $arr = array(
+            "touser" => "oM600xIZIPjcBkvJ3nDvZ4PvdqHA",
+            "template_id" => "-zxx8XNP_xchzUAnf9_NkEW1SqjS-nFL32i-_7TFI8A",
+            "url" => "https://icharle.com",
+            "data" => array(
+                "name" => array(
+                    "value" => "艾超先生",
+                    "color" => "#040100"
+                ),
+                "time" => array(
+                    "value" => date('Y-m-d H:i:s'),
+                    "color" => "#6BF28A"
+                ),
+                "money" => array(
+                    "value" => "30.69元",
+                    "color" => "#F23209"
+                ),
+                "smoney" => array(
+                    "value" => "1045265元",
+                    "color" => "#F00D33"
+                )
+            ),
+        );
+        $postarr = json_encode($arr);
+        $res = $this->http_curl($url,'post','json',$postarr);
+        dump($res);
+    }
+    
 
 
 
