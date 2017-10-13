@@ -123,4 +123,64 @@ class IndexController extends Controller {
         $IndexModel = D('index');
         $IndexModel -> responseNews($postObj ,$arr);
     }
+
+
+    /**
+     * @param $url
+     * @param string $type
+     * @param string $res
+     * @param string $arr
+     * 万能请求
+     */
+    public function http_curl($url,$type='get',$res='json',$arr=''){
+        $ch = curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        if ($type = 'post'){
+            curl_setopt($ch,CURLOPT_POST,1);
+            curl_setopt($ch,CURLOPT_POSTFIELDS,$arr);
+        }
+        $output = curl_exec($ch);
+        curl_close($ch);
+        if ($res == 'json'){
+            return json_decode($output,true);
+        }
+    }
+
+
+    /**
+     * @return mixed
+     * 获取access_token
+     */
+    public function getAccessToken()
+    {
+        $appid = 'wx067f49099f34a834';
+        $secret = 'c4080ff533cc1ad34e1744fba10f28ac';
+
+        //如果access_token没有过期，直接return
+        if ($_SESSION['access_token'] && $_SESSION['expire_time']>time() ){
+            return $_SESSION['access_token'];
+        }else{
+            //重新获取access_token
+            $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$appid.'&secret='.$secret;
+            $res = $this->http_curl($url,'get','json');
+            $_SESSION['access_token'] = $res['access_token'];
+            $_SESSION['expire_time'] = time()+7200;
+            return $res['access_token'];
+        }
+    }
+
+
+    /**
+     * @return mixed
+     * 获取微信服务器IP地址
+     */
+    public function WxServerIp()
+    {
+        $Access_Token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token='.$Access_Token;
+        $res = $this->http_curl($url,'get','json');
+        dump($res);
+    }
 }

@@ -5,6 +5,7 @@
 	$STATIC_METHOD_TYPES = [
 
 		\D('') => [
+			'Index' instanceof Home\Model\IndexModel,
 			'Adv' instanceof Think\Model\AdvModel,
 			'Mongo' instanceof Think\Model\MongoModel,
 			'View' instanceof Think\Model\ViewModel,
