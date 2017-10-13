@@ -245,5 +245,24 @@ class IndexController extends Controller {
 
 
 
+    /**
+     * 长链接转短链接接口
+     */
+    public function ShortUrl()
+    {
+        $Access_Token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/shorturl?access_token='.$Access_Token;
+        $longurl = 'https://icharle.com';
+        $arr = array(
+            "action" => "long2short",
+            "long_url" => $longurl,
+        );
+        $postarr = json_encode($arr);
+        $res = $this->http_curl($url,'post','json',$postarr);
+        echo $res['short_url'];
+    }
+
+
+
     
 }
