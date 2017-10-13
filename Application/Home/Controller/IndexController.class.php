@@ -47,7 +47,55 @@ class IndexController extends Controller {
             //关注公众号事件
             if( strtolower($postObj->Event == 'subscribe') ){
 
-                $this->duotu($postObj);
+                if ($postObj->EventKey == 'qrscene_Temp'){
+                    $arr = array(
+                        array(
+                            'title' => '艾超博客',
+                            'description'=>'Icharle',
+                            'picUrl'=>'https://avatars3.githubusercontent.com/u/25547121?s=460&v=4',
+                            'url'=>'https://icharle.com',
+                        ),
+                        array(
+                            'title' => 'UoocOnline 优课在线刷课插件',
+                            'description' => '技巧',
+                            'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                            'url' => 'https://icharle.com/uooconline.html',
+                        ),
+                        array(
+                            'title' => '临时二维码',
+                            'description' => '技巧',
+                            'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                            'url' => 'https://icharle.com/uooconline.html',
+                        ),
+                    );
+                    $IndexModel = D('index');
+                    $IndexModel -> responseNews($postObj ,$arr);
+                }else if ($postObj->EventKey == 'qrscene_Last'){
+                    $arr = array(
+                        array(
+                            'title' => '艾超博客',
+                            'description'=>'Icharle',
+                            'picUrl'=>'https://avatars3.githubusercontent.com/u/25547121?s=460&v=4',
+                            'url'=>'https://icharle.com',
+                        ),
+                        array(
+                            'title' => 'UoocOnline 优课在线刷课插件',
+                            'description' => '技巧',
+                            'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                            'url' => 'https://icharle.com/uooconline.html',
+                        ),
+                        array(
+                            'title' => '永久二维码',
+                            'description' => '技巧',
+                            'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                            'url' => 'https://icharle.com/uooconline.html',
+                        ),
+                    );
+                    $IndexModel = D('index');
+                    $IndexModel -> responseNews($postObj ,$arr);
+                }else{
+                    $this->duotu($postObj);
+                }
 
 //                回复用户消息(纯文本格式)
 //                $toUser   = $postObj->FromUserName;
@@ -64,6 +112,59 @@ class IndexController extends Controller {
 //							</xml>";
 //                $info     = sprintf($template, $toUser, $fromUser, $time, $msgType, $content);
 //                echo $info;
+            }
+
+            /**
+             * 扫描二维码推送事件
+             */
+
+            //关注后扫描二维码
+            if ( strtolower($postObj->Event == 'SCAN') && ($postObj->EventKey == 'Temp') ){
+                $arr = array(
+                    array(
+                        'title' => '艾超博客',
+                        'description'=>'Icharle',
+                        'picUrl'=>'https://avatars3.githubusercontent.com/u/25547121?s=460&v=4',
+                        'url'=>'https://icharle.com',
+                    ),
+                    array(
+                        'title' => 'UoocOnline 优课在线刷课插件',
+                        'description' => '技巧',
+                        'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                        'url' => 'https://icharle.com/uooconline.html',
+                    ),
+                    array(
+                        'title' => '临时二维码--关注',
+                        'description' => '技巧',
+                        'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                        'url' => 'https://icharle.com/uooconline.html',
+                    ),
+                );
+                $IndexModel = D('index');
+                $IndexModel -> responseNews($postObj ,$arr);
+            }elseif (strtolower($postObj->Event == 'SCAN') && ($postObj->EventKey == 'Last') ){
+                $arr = array(
+                    array(
+                        'title' => '艾超博客',
+                        'description'=>'Icharle',
+                        'picUrl'=>'https://avatars3.githubusercontent.com/u/25547121?s=460&v=4',
+                        'url'=>'https://icharle.com',
+                    ),
+                    array(
+                        'title' => 'UoocOnline 优课在线刷课插件',
+                        'description' => '技巧',
+                        'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                        'url' => 'https://icharle.com/uooconline.html',
+                    ),
+                    array(
+                        'title' => '永久二维码--关注',
+                        'description' => '技巧',
+                        'picUrl' => 'https://semantic-ui.com/examples/assets/images/logo.png',
+                        'url' => 'https://icharle.com/uooconline.html',
+                    ),
+                );
+                $IndexModel = D('index');
+                $IndexModel -> responseNews($postObj ,$arr);
             }
         }
 
@@ -261,6 +362,9 @@ class IndexController extends Controller {
         $res = $this->http_curl($url,'post','json',$postarr);
         echo $res['short_url'];
     }
+
+
+
 
 
 
