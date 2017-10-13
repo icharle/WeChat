@@ -155,8 +155,8 @@ class IndexController extends Controller {
      */
     public function getAccessToken()
     {
-        $appid = 'wx067f49099f34a834';
-        $secret = 'c4080ff533cc1ad34e1744fba10f28ac';
+        $appid = 'wxa87cc760b17dd72c';
+        $secret = 'ba6fbf30ff7ff16f801521726339d9d7';
 
         //如果access_token没有过期，直接return
         if ($_SESSION['access_token'] && $_SESSION['expire_time']>time() ){
@@ -183,4 +183,67 @@ class IndexController extends Controller {
         $res = $this->http_curl($url,'get','json');
         dump($res);
     }
+
+
+
+    /**
+     * 获取临时二维码
+     */
+    public function TempQRcode()
+    {
+        $Access_Token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$Access_Token;
+        $arr = array(
+            "expire_seconds" => 604800,
+            "action_name" => "QR_STR_SCENE",
+            "action_info" => array(
+                "scene" => array(
+                    "scene_str" => "Temp"
+                )
+            ),
+        );
+        $postArr = json_encode($arr);
+
+        //创建二维码ticket
+        $res = $this->http_curl($url,'post','json', $postArr);
+
+        //通过ticket换取二维码
+        $TICKET = $res['ticket'];
+        $url1 = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='.$TICKET;
+        echo "<img src='". $url1 ."'/>";
+        echo "<h1>临时二维码</h1>";
+    }
+
+
+
+    /**
+     * 获取永久二维码
+     */
+    public function LastQRcode()
+    {
+        $Access_Token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$Access_Token;
+        $arr = array(
+            "action_name" => "QR_LIMIT_STR_SCENE",
+            "action_info" => array(
+                "scene" => array(
+                    "scene_str" => "Last"
+                )
+            ),
+        );
+        $postArr = json_encode($arr);
+
+        //创建二维码ticket
+        $res = $this->http_curl($url,'post','json', $postArr);
+
+        //通过ticket换取二维码
+        $TICKET = $res['ticket'];
+        $url1 = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='.$TICKET;
+        echo "<img src='". $url1 ."'/>";
+        echo "<h1>永久二维码</h1>";
+    }
+
+
+
+    
 }
