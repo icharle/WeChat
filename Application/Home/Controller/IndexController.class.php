@@ -428,6 +428,16 @@ class IndexController extends Controller {
                                 "name" => urlencode("模板消息"),
                                 "url"  => "http://soarteam.cn/wechat/index.php/Home/Index/Model"
                             ),
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("静默授权"),
+                                "url"  => "http://soarteam.cn/wechat/index.php/Home/Index/ScopeBase"
+                            ),
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("详细授权"),
+                                "url"  => "http://soarteam.cn/wechat/index.php/Home/Index/ScopeUserinfo"
+                            ),
                         ),
                     ),
                     array(
@@ -513,7 +523,54 @@ class IndexController extends Controller {
         $res = $this->http_curl($url,'post','json',$postarr);
         dump($res);
     }
+
+    /**
+     * 微信网页授权之静默授权
+     */
+    public function ScopeBase()
+    {
+        $appid = 'wxa87cc760b17dd72c';
+        $redirect_uri = urlencode('http://soarteam.cn/wechat/index.php/Home/Index/ScopeBaseSecond');
+        $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='.$appid.'&redirect_uri='.$redirect_uri.'&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
+        header('location:'.$url);
+
+    }
+
+    public function ScopeBaseSecond()
+    {
+        $appid = 'wxa87cc760b17dd72c';
+        $appsecret = 'ba6fbf30ff7ff16f801521726339d9d7';
+        $code = $_GET['code'];
+        $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$appid.'&secret='.$appsecret.'&code='.$code.'&grant_type=authorization_code';
+        $res = $this->http_curl($url);
+        dump($res);
+    }
     
+    
+    /**
+     * 微信网页授权之详细授权
+     */
+    public function ScopeUserinfo()
+    {
+        $appid = 'wxa87cc760b17dd72c';
+        $redirect_uri = urlencode('http://soarteam.cn/wechat/index.php/Home/Index/ScopeUserinfoSecond');
+        $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='.$appid.'&redirect_uri='.$redirect_uri.'&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect';
+        header('location:'.$url);
+    }
+
+    public function ScopeUserinfoSecond()
+    {
+        $appid = 'wxa87cc760b17dd72c';
+        $appsecret = 'ba6fbf30ff7ff16f801521726339d9d7';
+        $code = $_GET['code'];
+        $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$appid.'&secret='.$appsecret.'&code='.$code.'&grant_type=authorization_code ';
+        $res = $this->http_curl($url);
+        $access_token = $res['access_token'];
+        $openid = $res['openid'];
+        $url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+        $res = $this->http_curl($url);
+        dump($res);
+    }
 
 
 
