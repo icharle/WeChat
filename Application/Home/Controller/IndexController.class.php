@@ -47,6 +47,7 @@ class IndexController extends Controller {
             //关注公众号事件
             if( strtolower($postObj->Event == 'subscribe') ){
 
+                //临时二维码
                 if ($postObj->EventKey == 'qrscene_Temp'){
                     $arr = array(
                         array(
@@ -70,6 +71,7 @@ class IndexController extends Controller {
                     );
                     $IndexModel = D('index');
                     $IndexModel -> responseNews($postObj ,$arr);
+                 //永久二维码
                 }else if ($postObj->EventKey == 'qrscene_Last'){
                     $arr = array(
                         array(
@@ -93,6 +95,7 @@ class IndexController extends Controller {
                     );
                     $IndexModel = D('index');
                     $IndexModel -> responseNews($postObj ,$arr);
+                 //推送
                 }else{
                     $this->duotu($postObj);
                 }
@@ -166,6 +169,38 @@ class IndexController extends Controller {
                 $IndexModel = D('index');
                 $IndexModel -> responseNews($postObj ,$arr);
             }
+
+            //菜单栏按钮
+            if( strtolower($postObj->Event == 'CLICK') ){
+                if ( strtolower($postObj->EventKey == 'VIP') ){
+                    $arr = array(
+                        array(
+                            'title' => 'VIP视频解析站',
+                            'description'=>'视频解析',
+                            'picUrl'=>'http://soarteam.cn/vip/style.png',
+                            'url'=>'http://soarteam.cn/vip/',
+                        )
+                    );
+                    $IndexModel = D('index');
+                    $IndexModel -> responseNews($postObj ,$arr);
+                }elseif ( strtolower($postObj->EventKey == 'tianqi') ){
+                    $arr = array(
+                        array(
+                            'title' => '广州天气',
+                            'description'=>'广州天气',
+                            'picUrl'=>'http://worldweather.wmo.int/images/22a.png',
+                            'url'=>'http://soarteam.cn/wechat/index.php/Home/Index/tianqi',
+                        )
+                    );
+                    $IndexModel = D('index');
+                    $IndexModel -> responseNews($postObj ,$arr);
+                }
+
+            }
+
+
+
+
         }
 
         //接受普通消息
@@ -362,7 +397,81 @@ class IndexController extends Controller {
         $res = $this->http_curl($url,'post','json',$postarr);
         echo $res['short_url'];
     }
+    
+    
+    /**
+     * 自定义菜单栏
+     */
+    public function MenuBar()
+    {
+        $Access_Token = $this->getAccessToken();
+        header('content-type:text/html;charset=utf-8');
+        $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token='.$Access_Token;
+        $arr = array(
+            "button" =>
+                array(
+                    array(
+                        "name" => urlencode("功能"),
+                        "sub_button" => array(
+                            array(
+                                "type" => "click",
+                                "name" => urlencode("VIP视频解析"),
+                                "key"  => "VIP"
+                            ),
+                            array(
+                                "type" => "click",
+                                "name" => urlencode("广州天气"),
+                                "key"  => "tianqi"
+                            ),
+                        ),
+                    ),
+                    array(
+                        "name" => urlencode("博客"),
+                        "sub_button" => array(
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("我的博客"),
+                                "url" => "https://icharle.com"
+                            ),
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("关于我"),
+                                "url"  => "https://icharle.com/about.html"
+                            ),
+                        ),
+                    ),
+                    array(
+                        "name" => urlencode("Github"),
+                        "sub_button" => array(
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("我的项目"),
+                                "url"  => "https://github.com/icharle"
+                            ),
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("超级课程表"),
+                                "url"  => "https://github.com/icharle/jwxt"
+                            ),
+                        ),
+                    ),
+                ),
+        );
+        $postarr = urldecode(json_encode($arr));
+        $res = $this->http_curl($url,'post','json',$postarr);
+        dump($res);
+    }
 
+
+    /**
+     * 菜单栏天气接口
+     */
+    public function tianqi()
+    {
+        $url = 'http://www.tuling123.com/openapi/api?key=b3e974784faa41a68f6b73d92ddae8db&info=%E5%B9%BF%E5%B7%9E%E5%A4%A9%E6%B0%94';
+        $res = $this->http_curl($url);
+        echo $res['text'];
+    }
 
 
 
