@@ -272,7 +272,9 @@ class IndexController extends Controller {
         $ch = curl_init();
         curl_setopt($ch,CURLOPT_URL,$url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_SAFE_UPLOAD, FALSE);
         if ($type = 'post'){
             curl_setopt($ch,CURLOPT_POST,1);
             curl_setopt($ch,CURLOPT_POSTFIELDS,$arr);
@@ -599,6 +601,7 @@ class IndexController extends Controller {
             $upload->autoSub = false;      //关闭子目录保存
             // 上传文件
             $info   =   $upload->upload();
+            $this->TempFile($info);       //新增临时素材
         }else{
             $this->display();
         }
@@ -606,7 +609,28 @@ class IndexController extends Controller {
     }
 
 
-
+    /**
+     * 新增临时素材
+     */
+    public function TempFile($res)
+    {
+            $type = $res['file']['type'];
+            if (explode("image",$type)){
+                $type = "image";
+            }elseif (explode("voice",$type)){
+                $type = "voice";
+            }elseif (explode("video",$type)){
+                $type = "video";
+            }elseif (explode("thumb",$type)){
+                $type = "thumb";
+            }
+            $filepath = dirname(dirname(dirname(dirname(__FILE__))))."\upload\\".$res['file']['savename'];
+            $Access_Token = $this->getAccessToken();
+            $url = 'https://api.weixin.qq.com/cgi-bin/media/upload?access_token='.$Access_Token.'&type='.$type;
+            $data = array('media' => new \CURLFile($filepath));
+            $res = $this->http_curl($url,'post','json',$data);
+            dump($res);
+    }
 
 
 
