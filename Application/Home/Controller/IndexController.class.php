@@ -5,7 +5,7 @@ class IndexController extends Controller {
 
     public function __construct()
     {
-
+        parent::__construct();
     }
 
     //验证消息的确来自微信服务器
@@ -453,6 +453,16 @@ class IndexController extends Controller {
                                 "name" => urlencode("关于我"),
                                 "url"  => "https://icharle.com/about.html"
                             ),
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("临时二维码"),
+                                "url"  => "http://soarteam.cn/wechat/index.php/Home/Index/TempQRcode"
+                            ),
+                            array(
+                                "type" => "view",
+                                "name" => urlencode("永久二维码"),
+                                "url"  => "http://soarteam.cn/wechat/index.php/Home/Index/LastQRcode"
+                            ),
                         ),
                     ),
                     array(
@@ -571,6 +581,34 @@ class IndexController extends Controller {
         $res = $this->http_curl($url);
         dump($res);
     }
+
+
+    /**
+     * 素材文件上传功能
+     */
+    public function upload()
+    {
+
+        if ($_FILES['file']!=""){
+            $upload = new \Think\Upload();// 实例化上传类
+            $upload->maxSize   =     3145728 ;// 设置附件上传大小
+            $upload->exts      =     array('jpg', 'gif', 'png', 'jpeg', 'mp3');// 设置附件上传类型
+            $upload->rootPath  =     './Upload/'; // 设置附件上传根目录
+            $upload->savePath  =     ''; // 设置附件上传（子）目录
+            $upload->saveName = '';       //保持原来的文件名
+            $upload->autoSub = false;      //关闭子目录保存
+            // 上传文件
+            $info   =   $upload->upload();
+        }else{
+            $this->display();
+        }
+
+    }
+
+
+
+
+
 
 
 
