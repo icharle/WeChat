@@ -601,7 +601,8 @@ class IndexController extends Controller {
             $upload->autoSub = false;      //关闭子目录保存
             // 上传文件
             $info   =   $upload->upload();
-            $this->TempFile($info);       //新增临时素材
+            //$this->TempFile($info);       //新增临时素材
+            $this->LastFile($info);       //新增永久素材
         }else{
             $this->display();
         }
@@ -631,6 +632,36 @@ class IndexController extends Controller {
             $res = $this->http_curl($url,'post','json',$data);
             dump($res);
     }
+
+
+
+
+
+    /**
+     * 新增永久素材
+     */
+    public function LastFile($res)
+    {
+        $type = $res['file']['type'];
+        if (explode("image",$type)){
+            $type = "image";
+        }elseif (explode("voice",$type)){
+            $type = "voice";
+        }elseif (explode("video",$type)){
+            $type = "video";
+        }elseif (explode("thumb",$type)){
+            $type = "thumb";
+        }
+        $filepath = dirname(dirname(dirname(dirname(__FILE__))))."\upload\\".$res['file']['savename'];
+        $Access_Token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/add_material?access_token='.$Access_Token.'&type='.$type;
+        $data = array('media' => new \CURLFile($filepath));
+        $res = $this->http_curl($url,'post','json',$data);
+        dump($res);
+    }
+
+
+
 
 
 
