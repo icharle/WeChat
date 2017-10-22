@@ -206,7 +206,8 @@ class IndexController extends Controller {
         //接受普通消息
         if(strtolower($postObj->MsgType) == 'text' && trim($postObj->Content) == 'tuwen'){
 
-            $this->duotu($postObj);
+            //$this->duotu($postObj);
+            $this->test($postObj);
 
         }else if (strtolower($postObj->MsgType) == 'text'){
             switch ( trim($postObj->Content)){
@@ -256,6 +257,29 @@ class IndexController extends Controller {
                 'url' => 'https://icharle.com/uooconline.html',
             ),
         );
+        $IndexModel = D('index');
+        $IndexModel -> responseNews($postObj ,$arr);
+    }
+
+
+    /**
+     * @param $postObj
+     * 接口测试
+     */
+    public function test($postObj)
+    {
+        $toUser = (string) $postObj->FromUserName;
+        $encrypt = md5(sha1($toUser));
+        $arr = array(
+            array(
+                'title' => '班级投票',
+                'description' => '班级投票',
+                'picUrl' => 'https://avatars3.githubusercontent.com/u/25547121?s=460&v=4',
+                'url' => 'http://soarteam.cn/class/index.php/Home/Index/index?openid='.$encrypt,
+            ),
+        );
+        $url = 'http://soarteam.cn/class/index.php/Home/Index/test?openid='.$encrypt;
+        $this->http_curl($url);
         $IndexModel = D('index');
         $IndexModel -> responseNews($postObj ,$arr);
     }
@@ -633,7 +657,22 @@ class IndexController extends Controller {
             dump($res);
     }
 
-
+    /**
+     * 获取临时素材
+     */
+    public function GetTempFile()
+    {
+        $Access_Token = $this->getAccessToken();
+        $media_id = 'iDNV3QlfYCKetTXcNCQ-kII9BDz2pqjl3bWfK5JTWltELRDPL36ikkIeXbpM0zQ5';
+        $url = 'https://api.weixin.qq.com/cgi-bin/media/get?access_token='.$Access_Token.'&media_id='.$media_id;
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_NOBODY, 0);//只取body头
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//curl_exec执行成功后返回执行的结果；不设置的话，curl_exec执行成功则返回true
+        $output = curl_exec($ch);
+        curl_close($ch);
+        dump($output);
+    }
 
 
 
@@ -661,7 +700,18 @@ class IndexController extends Controller {
     }
 
 
-
+    /**
+     * 获取永久素材
+     */
+    public function GetLastFile()
+    {
+        $Access_Token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/get_material?access_token='.$Access_Token;
+        $arr = array("media_id" => 'XpOcXxU37p6LHTcLLimjH8BCIuJS5qUrco-8lVvnZK0');
+        $postarr = json_encode($arr);
+        $res = $this->http_curl($url,'post','json',$postarr);
+        dump($res);
+    }
 
 
 
