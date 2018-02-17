@@ -721,7 +721,7 @@ class IndexController extends Controller
     {
         if (!$_SESSION['JsTicket'] && $_SESSION['JsExpire_time'] < time()) {
             $Access_Token = $this->getAccessToken();
-            $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token==' . $Access_Token . '&type=jsapi';
+            $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' . $Access_Token . '&type=jsapi';
             $res = $this->http_curl($url, 'get', 'json', '');
             $_SESSION['JsTicket'] = $res['ticket'];
             $_SESSION['JsExpire_time'] = time() + 7000;
